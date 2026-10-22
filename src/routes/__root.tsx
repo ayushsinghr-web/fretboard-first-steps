@@ -78,14 +78,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Guitar Excellence Hub" },
+      { name: "description", content: "Beginner guitar lessons with chord diagrams, strumming patterns and a free tuner." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
@@ -93,6 +89,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: appCss,
       },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=DM+Sans:wght@400..700&display=swap" },
     ],
   }),
   shellComponent: RootShell,
@@ -121,7 +120,25 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+      <nav className="wrap site-nav">
+        <Link to="/" className="logo"><i></i>Guitar Excellence Hub</Link>
+        <div className="nav-links">
+          <Link to="/songs">Songs</Link>
+          <Link to="/chords">Chords</Link>
+          <Link to="/strumming">Strumming</Link>
+          <Link to="/guides">Guides</Link>
+          <Link to="/about">About</Link>
+          <Link to="/contact">Contact</Link>
+        </div>
+      </nav>
       <Outlet />
+      <footer className="site-foot">
+        <nav>
+          <Link to="/songs">Songs</Link><Link to="/chords">Chord library</Link><Link to="/strumming">Strumming patterns</Link>
+          <Link to="/guides">Guides</Link><Link to="/about">About</Link><Link to="/contact">Contact</Link><Link to="/privacy">Privacy policy</Link>
+        </nav>
+        <p>© {new Date().getFullYear()} Guitar Excellence Hub. Chord sounds are synthesized live in your browser. Strumming patterns are beginner-friendly adaptations.</p>
+      </footer>
     </QueryClientProvider>
   );
 }
