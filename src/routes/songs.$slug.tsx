@@ -30,7 +30,7 @@ function SongPage() {
         <div className="chords">{s.chords.map((c, i) => <ChordDiagram key={c} name={c} label={`Chord ${i + 1}`} />)}</div>
         <p style={{ color: "var(--mu)", marginTop: 16 }}>Progression: <b style={{ color: "var(--tx)" }}>{s.progression}</b></p>
       </div>
-      <div className="pn"><h2>The strumming pattern</h2><StrumPattern pattern={pat} chord={s.chords[0]} /></div>
+      <div className="pn"><h2>The strumming pattern</h2><StrumPattern pattern={pat} chord={s.chords[0] ?? "G"} /></div>
       <div className="prose">
         <h2>Step-by-step practice plan</h2>
         <ol>{s.steps.map((x) => <li key={x}>{x}</li>)}</ol>
