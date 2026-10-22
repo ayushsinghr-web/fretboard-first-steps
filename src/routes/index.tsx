@@ -1,24 +1,57 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { homeTop, homeBottom, bootHome } from "@/lib/home-legacy";
+import { Headstock } from "@/components/guitar";
+import { SONGS, GUIDES } from "@/lib/guitar-data";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "Guitar Excellence Hub: learn Riptide, Stand By Me and Zombie" },
+      { name: "description", content: "An interactive beginner guitar dashboard with a tuner, chord diagrams, chord audio, strumming patterns and a live metronome." },
+      { property: "og:title", content: "Guitar Excellence Hub: learn guitar songs the easy way" },
+      { property: "og:description", content: "Tune up, see the chord, hear the chord and strum along with a live metronome." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
 function Index() {
+  useEffect(() => {
+    const ac = new AbortController();
+    bootHome(ac.signal);
+    return () => ac.abort();
+  }, []);
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
+    <main>
+      <div dangerouslySetInnerHTML={{ __html: homeTop }} />
+      <section className="wrap">
+        <div className="pn">
+          <h2>Which peg is which string?</h2>
+          <p style={{ color: "var(--mu)", margin: "-8px 0 10px", maxWidth: "60ch" }}>
+            Hold your guitar facing you. Each letter sits next to the peg that tunes that string. Tap one to hear how it should sound.
+          </p>
+          <Headstock />
+        </div>
+      </section>
+      <div dangerouslySetInnerHTML={{ __html: homeBottom }} />
+      <section className="wrap hb">
+        <h2>Song lessons and guides</h2>
+        <div className="cards">
+          {SONGS.map((s) => (
+            <Link key={s.slug} to="/songs/$slug" params={{ slug: s.slug }} className="card">
+              <span className="tag">Song lesson</span><h3>{s.title}</h3><p>{s.artist} · {s.chords.join(" ")}</p>
+            </Link>
+          ))}
+          {GUIDES.slice(0, 3).map((g) => (
+            <Link key={g.slug} to="/guides/$slug" params={{ slug: g.slug }} className="card">
+              <span className="tag">Guide</span><h3>{g.title}</h3><p>{g.desc}</p>
+            </Link>
+          ))}
+        </div>
+      </section>
+    </main>
   );
 }
