@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { homeTop, homeBottom, bootHome } from "@/lib/home-legacy";
-import { Headstock } from "@/components/guitar";
+import { Tuner } from "@/components/tuner";
 import { SONGS, GUIDES } from "@/lib/guitar-data";
 
 export const Route = createFileRoute("/")({
@@ -27,15 +27,7 @@ function Index() {
   return (
     <main>
       <div dangerouslySetInnerHTML={{ __html: homeTop }} />
-      <section className="wrap">
-        <div className="pn">
-          <h2>Which peg is which string?</h2>
-          <p style={{ color: "var(--mu)", margin: "-8px 0 10px", maxWidth: "60ch" }}>
-            Hold your guitar facing you. Each letter sits next to the peg that tunes that string. Tap one to hear how it should sound.
-          </p>
-          <Headstock />
-        </div>
-      </section>
+      <Tuner />
       <div dangerouslySetInnerHTML={{ __html: homeBottom }} />
       <section className="wrap hb">
         <h2>Song lessons and guides</h2>

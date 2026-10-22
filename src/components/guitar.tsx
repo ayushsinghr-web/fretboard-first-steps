@@ -65,18 +65,21 @@ export function StrumPattern({ pattern, chord = "G" }: { pattern: Pattern; chord
   );
 }
 
-/** Headstock view (3+3 layout): tap a string label to hear its note. */
-export function Headstock() {
-  const [on, setOn] = useState(-1);
-  const hit = (i: number) => { pluck(STRINGS[i]!.hz); setOn(i); setTimeout(() => setOn((v) => (v === i ? -1 : v)), 1600); };
-  // left column top->bottom: D A E (indices 2,1,0); right: G B e (3,4,5)
+export type TuneState = "idle" | "low" | "high" | "ok";
+
+/** Headstock view (3+3 layout). Tap a letter to hear its note; the tuner can highlight a string. */
+export function Headstock({ active = -1, state = "idle" }: { active?: number; state?: TuneState } = {}) {
+  const [tap, setTap] = useState(-1);
+  const on = active >= 0 ? active : tap;
+  const cls = active >= 0 ? ` t-${state}` : "";
+  const hit = (i: number) => { pluck(STRINGS[i]!.hz); setTap(i); setTimeout(() => setTap((v) => (v === i ? -1 : v)), 1600); };
   const left = [2, 1, 0], right = [3, 4, 5];
   const pegY = [70, 130, 190];
-  const strX = [68, 79, 90, 110, 121, 132]; // at the nut
+  const strX = [68, 79, 90, 110, 121, 132];
   const postL = [72, 82, 92], postR = [128, 118, 108];
   const Btn = ({ i }: { i: number }) => (
-    <button className={`hs-b${on === i ? " on" : ""}`} onClick={() => hit(i)} aria-label={`Play ${STRINGS[i]!.label} string, ${STRINGS[i]!.name}`}>
-      <span><b>{STRINGS[i]!.name}</b><br /><small>{STRINGS[i]!.label}</small></span>
+    <button className={`hs-b${on === i ? " on" + cls : ""}`} onClick={() => hit(i)} aria-label={`Play ${STRINGS[i]!.label} string, ${STRINGS[i]!.name}`}>
+      <span><b>{STRINGS[i]!.name}</b><br /><small>{on === i && state === "low" && active >= 0 ? "tighten" : on === i && state === "high" && active >= 0 ? "loosen" : on === i && state === "ok" && active >= 0 ? "in tune" : STRINGS[i]!.label}</small></span>
     </button>
   );
   return (
@@ -85,10 +88,10 @@ export function Headstock() {
         <div className="hs-col l">{left.map((i) => <Btn key={i} i={i} />)}</div>
         <svg viewBox="0 0 200 300" aria-hidden="true">
           <path className="wood" d="M40 30 Q100 5 160 30 L165 225 Q150 240 140 260 L140 300 L60 300 L60 260 Q50 240 35 225 Z" />
-          {left.map((s, k) => <g key={s}><rect className={`peg${on === s ? " on" : ""}`} x="6" y={pegY[k]! - 12} width="30" height="24" rx="10" /><circle className="post" cx={postL[k]!} cy={pegY[k]!} r="7" /></g>)}
-          {right.map((s, k) => <g key={s}><rect className={`peg${on === s ? " on" : ""}`} x="164" y={pegY[k]! - 12} width="30" height="24" rx="10" /><circle className="post" cx={postR[k]!} cy={pegY[k]!} r="7" /></g>)}
-          {left.map((s, k) => <line key={s} className={`str${on === s ? " on" : ""}`} x1={postL[k]!} y1={pegY[k]!} x2={strX[s]!} y2="300" />)}
-          {right.map((s, k) => <line key={s} className={`str${on === s ? " on" : ""}`} x1={postR[k]!} y1={pegY[k]!} x2={strX[s]!} y2="300" />)}
+          {left.map((s, k) => <g key={s}><rect className={`peg${on === s ? " on" + cls : ""}`} x="6" y={pegY[k]! - 12} width="30" height="24" rx="10" /><circle className="post" cx={postL[k]!} cy={pegY[k]!} r="7" /></g>)}
+          {right.map((s, k) => <g key={s}><rect className={`peg${on === s ? " on" + cls : ""}`} x="164" y={pegY[k]! - 12} width="30" height="24" rx="10" /><circle className="post" cx={postR[k]!} cy={pegY[k]!} r="7" /></g>)}
+          {left.map((s, k) => <line key={s} className={`str${on === s ? " on" + cls : ""}`} x1={postL[k]!} y1={pegY[k]!} x2={strX[s]!} y2="300" />)}
+          {right.map((s, k) => <line key={s} className={`str${on === s ? " on" + cls : ""}`} x1={postR[k]!} y1={pegY[k]!} x2={strX[s]!} y2="300" />)}
         </svg>
         <div className="hs-col r">{right.map((i) => <Btn key={i} i={i} />)}</div>
       </div>

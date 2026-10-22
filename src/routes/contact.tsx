@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { seo } from "@/lib/seo";
 
-const EMAIL = "hello@guitarexcellencehub.com";
+const EMAIL = "ayushsinghraj6182@gmail.com";
 
 export const Route = createFileRoute("/contact")({
   head: () => seo("Contact Guitar Excellence Hub", "Send us a question, a song request or feedback about our beginner guitar lessons."),
