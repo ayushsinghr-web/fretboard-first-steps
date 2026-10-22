@@ -1,6 +1,6 @@
 // @ts-nocheck
 /* Original interactive home page markup + engine, ported verbatim. */
-export const homeTop = "\n<canvas id=\"fx\" aria-hidden=\"true\"></canvas>\n\n\n<header class=\"wrap hero\"><h1><span style=\"--i:1\">See the chord.</span><span style=\"--i:2\">Hear the chord.</span><span style=\"--i:3\">Play the song.</span></h1>\n<p class=\"sub\">Tune up with the built-in tuner, then pick a beginner song, study each chord shape, press play to hear it, then strum along with a live metronome. Move your cursor across the strings behind this page to pluck them.</p>\n<div class=\"cta\"><a class=\"btn\" href=\"#tuner\">Tune your guitar</a><a href=\"#studio\">Practice a song</a><a href=\"#habits\">Read the three habits</a></div></header>\n<section id=\"tuner\" class=\"wrap\"><div class=\"pn\"><h2>Tune your guitar</h2><p style=\"color:var(--mu);margin:-8px 0 20px;max-width:60ch\">Tap a string to hear the note it should make. Or start the tuner, pluck one string at a time, and move the needle to the center.</p><div class=\"sbs\" id=\"sbs\"></div><div class=\"tn\" id=\"tn\"><div class=\"rd\"><b id=\"nn\">-</b><span id=\"hz\">Press start and allow the microphone</span></div><div class=\"mt\"><i id=\"nd\"></i></div><div class=\"ms\"><span>Flat</span><span id=\"st\" aria-live=\"polite\">Standard tuning: E A D G B e</span><span>Sharp</span></div><button class=\"btn\" id=\"mic\">Start tuner</button></div></div></section>\n";
+export const homeTop = "\n<canvas id=\"fx\" aria-hidden=\"true\"></canvas>\n\n\n<header class=\"wrap hero\"><h1><span style=\"--i:1\">See the chord.</span><span style=\"--i:2\">Hear the chord.</span><span style=\"--i:3\">Play the song.</span></h1>\n<p class=\"sub\">Tune up with the built-in tuner, then pick a beginner song, study each chord shape, press play to hear it, then strum along with a live metronome. Move your cursor across the strings behind this page to pluck them.</p>\n<div class=\"cta\"><a class=\"btn\" href=\"#tuner\">Tune your guitar</a><a href=\"#studio\">Practice a song</a><a href=\"#habits\">Read the three habits</a></div></header>\n\n";
 export const homeBottom = "<section id=\"studio\" class=\"wrap\">\n<div class=\"pn\"><h2>Pick a song</h2><div class=\"tabs\" id=\"tabs\"></div>\n<div class=\"tr\"><button class=\"play\" id=\"go\" aria-label=\"Start or stop the metronome\"></button>\n<div class=\"bpm\"><div><span>Tempo</span><span><b id=\"bv\">100</b> BPM</span></div><input type=\"range\" id=\"bpm\" min=\"60\" max=\"120\" aria-label=\"Tempo in beats per minute\"></div>\n<div class=\"beats\" aria-label=\"Beat indicator\"><i>1</i><i>2</i><i>3</i><i>4</i></div>\n<div class=\"sw\"><label><input type=\"checkbox\" id=\"clk\" checked>Metronome click</label><label><input type=\"checkbox\" id=\"snd\" checked>Play chord sound</label><label><input type=\"checkbox\" id=\"anim\" checked>Animate strumming</label></div></div></div>\n<div class=\"pn\"><h2>Learn the shapes</h2><div class=\"chords\" id=\"chords\"></div></div>\n<div class=\"pn\"><h2>Strum along</h2><div class=\"strum\" id=\"strum\"></div>\n<div class=\"key\"><span>Down strum</span><span>Up strum</span><span>Muted slap</span><span>Dot: rest</span></div>\n<div class=\"tip\"><b id=\"tt\"></b><br><span id=\"tp\"></span></div></div>\n</section>\n<section id=\"habits\" class=\"wrap hb\"><h2>Three habits that make chord changes easier</h2><div class=\"hg\">\n<article><h3>The Pivot Finger</h3><p>When you switch from Am to C, keep your index and middle fingers glued to the fretboard. Only your ring finger moves, from the 2nd fret of the G string up to the 3rd fret of the A string.</p></article>\n<article><h3>The Hover Rule</h3><p>Keep your fingers curved and hovering just above the frets between chords. The shorter the trip back to the strings, the faster and cleaner the change.</p></article>\n<article><h3>The 2-Minute Silent Switch</h3><p>Set a timer and swap between two chord shapes without strumming at all. Go slowly, check that every string rings, then repeat. This is how muscle memory gets built.</p></article></div></section>\n";
 export function bootHome(SIG: AbortSignal) {
 
@@ -65,28 +65,8 @@ cx.stroke()}
 cx.shadowBlur=0;if(!RM&&!SIG.aborted)requestAnimationFrame(draw)}
 addEventListener('pointermove',e=>{const f=e.clientY/innerHeight,i=Math.round((f-.16)/.13);if(i<0||i>5||Math.abs(f-(.16+i*.13))*innerHeight>20)return;const n=performance.now();if(n-last[i]<350)return;last[i]=n;amp[i]=Math.max(amp[i],.7);if(ctx&&ctx.state=='running')note(op[i],ctx.currentTime,.08,1.2)},{signal:SIG});
 addEventListener('resize',rs,{signal:SIG});rs();requestAnimationFrame(draw);
-/* ---------- tuner ---------- */
-const NM=['E','A','D','G','B','e'];let mi,sm=0,ls=-1,miss=0;
-$('#sbs').innerHTML=op.map((f,i)=>`<button class="sb" data-i="${i}" aria-label="Play string ${6-i}, ${NM[i]}"><b>${NM[i]}</b><small>String ${6-i}</small><small>${Math.round(f)} Hz</small></button>`).join('');
-$('#sbs').onclick=e=>{const b=e.target.closest('.sb');if(!b)return;init();const i=+b.dataset.i;note(op[i],ctx.currentTime,.2,2.6);amp[i]=1;b.classList.add('ref');setTimeout(()=>b.classList.remove('ref'),600)};
-function pitch(b,sr){const n=b.length;let e=0;for(let i=0;i<n;i++)e+=b[i]*b[i];if(e/n<1e-4)return 0;
-const lo=sr/400|0,hi=Math.min(sr/70|0,n>>1),c=[];let mx=0;
-for(let l=lo;l<=hi;l++){let s=0;for(let j=0;j<n-hi;j++)s+=b[j]*b[j+l];c[l]=s;if(s>mx)mx=s}
-for(let l=lo+1;l<hi;l++)if(c[l]>.9*mx&&c[l]>=c[l-1]&&c[l]>=c[l+1]){const y1=c[l-1],y2=c[l],y3=c[l+1],a=y1+y3-2*y2;return sr/(l+(a?.5*(y1-y3)/a:0))}return 0}
-const say=t=>$('#hz').textContent=t;
-function tl(){if(!mi)return;mi.an.getFloatTimeDomainData(mi.b);const f=pitch(mi.b,ctx.sampleRate);
-if(f>60&&f<420){miss=0;let bi=0,bc=1e9;op.forEach((t,i)=>{const c=1200*Math.log2(f/t);if(Math.abs(c)<Math.abs(bc)){bc=c;bi=i}});
-sm=bi==ls?sm*.55+bc*.45:bc;ls=bi;const c=Math.max(-50,Math.min(50,sm)),ok=Math.abs(sm)<5;
-$('#nn').textContent=NM[bi];$('#nd').style.left=50+c+'%';$('#tn').classList.toggle('ok',ok);
-say(f.toFixed(1)+' Hz, '+(sm>0?'+':'')+sm.toFixed(0)+' cents');$('#st').textContent=ok?'In tune':sm<0?'Too low: tighten the string':'Too high: loosen the string';
-$$('.sb').forEach((b,i)=>b.classList.toggle('on',i==bi))}
-else if(++miss>8){$('#nn').textContent='-';$('#nd').style.left='50%';$('#tn').classList.remove('ok');$$('.sb.on').forEach(b=>b.classList.remove('on'));$('#st').textContent='Pluck one string at a time'}
-setTimeout(tl,60)}
-$('#mic').onclick=async()=>{if(mi){mi.st.getTracks().forEach(t=>t.stop());mi=null;$('#mic').textContent='Start tuner';say('Tuner stopped');return}
-try{init();const st=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}}),an=ctx.createAnalyser();an.fftSize=4096;ctx.createMediaStreamSource(st).connect(an);mi={st,an,b:new Float32Array(4096)};$('#mic').textContent='Stop tuner';say('Pluck a string');miss=9;tl()}
-catch(e){say('The microphone is blocked here. Host the page or open it in its own tab and allow the microphone, or tune by ear with the string buttons.')}};
 $('#go').innerHTML=PL;load('riptide');
 
-SIG.addEventListener('abort',()=>{run=0;clearTimeout(tm);if(mi)mi.st.getTracks().forEach(t=>t.stop());mi=null;if(ctx)ctx.close()});
+SIG.addEventListener('abort',()=>{run=0;clearTimeout(tm);if(ctx)ctx.close()});
 
 }
