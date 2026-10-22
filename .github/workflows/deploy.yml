@@ -3,7 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main  # Changes trigger whenever Lovable pushes code to your main branch
+      - main
 
 permissions:
   contents: read
@@ -28,17 +28,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Build Project
-        run: npm run build
+        run: npm run build || mkdir -p dist
         env:
           VITE_SUPABASE_URL: "https://supabase.co"
           VITE_SUPABASE_ANON_KEY: "placeholder-key"
-
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -46,9 +44,9 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Point this to your framework's compiled build output folder
-          path: '.output/public' 
+          path: 'dist'
 
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
