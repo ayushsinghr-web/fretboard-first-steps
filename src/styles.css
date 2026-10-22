@@ -138,3 +138,4 @@ footer{padding:20px 20px 50px;color:var(--mu);font-size:.9rem;max-width:1080px;m
 .hs .post{fill:#e8e4dd;stroke:#7d7972}
 .hs .str{stroke:#d9d4cc;stroke-width:1.4}.hs .str.on{stroke:var(--tl);stroke-width:2.4;filter:drop-shadow(0 0 4px var(--tl))}
 .hs-legend{text-align:center;color:var(--mu);font-size:.92rem;margin-top:18px}
+.prose ol{list-style:decimal}.prose ul{list-style:disc}
